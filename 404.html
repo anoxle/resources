@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>resources</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Inter:wght@500;600&display=swap');
+:root{ --bg:#1f232e; --accent:#725de6; --accent-2:#9b62da; --muted:#9aa0b2; }
+*{box-sizing:border-box} html{color-scheme:dark}
+
+body{
+  margin:0; min-height:100dvh; font-family:'Inter',system-ui,sans-serif; color:#fff;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(rgba(255,255,255,0.11) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(114,93,230,0.09) 0%, rgba(114,93,230,0) 42%);
+  background-size:20px 20px, 100% 100%;
+  background-position:0 0, 0 0;
+    overflow-x:hidden;
+}
+
+.loading-line{position:fixed; inset:0 0 auto 0; height:2px; z-index:1001; background:linear-gradient(90deg,var(--accent),var(--accent-2)); transform-origin:left; transform:scaleX(0); opacity:0}
+.loading-line.animate{opacity:1; animation:loadLine 1.05s cubic-bezier(.22,.61,.36,1) forwards}
+@keyframes loadLine{0%{transform:scaleX(0)}75%{transform:scaleX(.88)}100%{transform:scaleX(1);opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes revealUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.wrap{min-height:100dvh; display:grid; place-items:center; padding:40px 20px}
+
+.panel{
+  width:100%; max-width:660px; padding:26px 22px 12px;
+  border-radius:20px; background:#252a3a; border:1px solid #32394e;
+  box-shadow:0 4px 16px rgba(0,0,0,0.28);
+  animation:fadeIn .45s ease both;
+}
+
+.crumbs{margin:0 6px 6px; font-size:.78rem; color:var(--muted); overflow-wrap:anywhere; animation:revealUp .45s .02s both}
+.crumbs a{color:#c4c7d6; text-decoration:none}
+.crumbs a:hover{color:#fff}
+.head-txt{
+  font-family:'Mochiy Pop One',sans-serif; font-size:clamp(1.45rem,4vw,1.95rem); margin:0 6px 18px;
+  line-height:1.15; overflow-wrap:anywhere;
+  background:linear-gradient(90deg,#7b6af0,#9b62da); -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent; animation:revealUp .45s .06s both;
+}
+
+.status{margin:0; padding:28px 8px; color:var(--muted); text-align:center; font-size:.88rem; animation:revealUp .45s .1s both}
+.status:empty{display:none}
+.status.error{color:#f0788c}
+
+.row{
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:11px;
+  border-bottom:1px solid #2c3246; animation:revealUp .35s both;
+}
+  .row:last-child{border-bottom:0}
+.row:hover{background:#2a2f42}
+.row svg{flex:none; color:var(--muted)}
+.row svg.fld{color:#8d80ee}
+.row .name{flex:1; min-width:0; overflow-wrap:anywhere; color:#c4c7d6; font-weight:500; font-size:.92rem; text-decoration:none}
+.row .name:hover{color:#fff}
+.row .size{color:var(--muted); font-size:.78rem; font-variant-numeric:tabular-nums; white-space:nowrap}
+.row:nth-child(2){animation-delay:.04s}
+.row:nth-child(3){animation-delay:.08s}
+.row:nth-child(4){animation-delay:.12s}
+.row:nth-child(5){animation-delay:.16s}
+
+.dl-btn{
+  flex:none; width:28px; height:28px; display:grid; place-items:center;
+  color:var(--muted); background:#252a3a; border:1px solid #32394e; border-radius:9px;
+  text-decoration:none;
+}
+.dl-btn:hover{color:#fff; background:#313752; border-color:#454d6d}
+
+.mini-btn{
+  height:32px; min-width:32px; padding:0 12px; border-radius:10px; cursor:pointer;
+  font:600 .82rem/1 'Inter',sans-serif; color:#c4c7d6; background:#2a2f42; border:1px solid #3a425e;
+  text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:7px;
+}
+.mini-btn:hover{color:#fff; background:#313752; border-color:#454d6d}
+.mini-btn:active{transform:scale(.98)}
+.mini-btn.primary{color:#fff; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-color:transparent}
+.mini-btn.primary:hover{background:linear-gradient(90deg,#7a6dea,#a46de2); box-shadow:0 4px 12px rgba(114,93,230,.30)}
+
+.mini-btn:focus-visible,.dl-btn:focus-visible,.row .name:focus-visible,.crumbs a:focus-visible{
+  outline:0; box-shadow:0 0 0 2px var(--bg), 0 0 0 3px rgba(114,93,230,.6);
+}
+
+.viewer{position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,.92); display:none; flex-direction:column}
+.viewer.on{display:flex}
+.v-bar{display:flex; align-items:center; gap:8px; padding:12px}
+.v-cap{flex:1; min-width:0; color:#c4c7d6; font-size:.82rem; overflow-wrap:anywhere}
+.v-stage{flex:1; min-height:0; display:grid; place-items:center}
+.v-stage img{max-width:94vw; max-height:86vh; border-radius:8px}
+
+@media(max-width:768px){
+  .wrap{padding:24px 12px 40px}
+  .panel{padding:20px 14px 6px; border-radius:16px}
+  .row{gap:8px}
+  .v-bar{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<div class="loading-line" id="loadLine"></div>
+
+<div class="wrap">
+  <div class="panel">
+    <p class="crumbs" id="crumbs"></p>
+    <h1 class="head-txt" id="folderName">resources</h1>
+    <p class="status" id="status">Loading…</p>
+    <div id="rows"></div>
+  </div>
+</div>
+
+<div id="viewer" class="viewer" role="dialog" aria-label="Image viewer">
+  <div class="v-bar">
+    <button class="mini-btn" id="vPrev" title="Previous (Left arrow)">&larr;</button>
+    <button id="vNext" class="mini-btn" title="Next (Right arrow)">&rarr;</button>
+    <span class="v-cap" id="vCap"></span>
+    <a class="mini-btn primary" id="vDl" href="#" download>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+      Download
+    </a>
+    <button id="vClose" class="mini-btn" title="Close (Esc)">&times;</button>
+  </div>
+  <div class="v-stage"><img id="vImg" alt=""></div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var SITE = { owner: "anoxle", repo: "resources" };
+  SITE.base = "/" + SITE.repo + "/";
+  SITE.manifest = SITE.base + "files.json";
+  SITE.fallback = "https://data.jsdelivr.com/v1/packages/gh/" + SITE.owner + "/" + SITE.repo + "@main?structure=flat";
+
+  var SKIP = [".nojekyll", ".github", "404.html", "files.json", "CNAME"];
+  var IMAGE_RE = /\.(png|jpe?g|gif|webp|svg|bmp|ico|avif)$/i;
+
+  var $ = id => document.getElementById(id);
+  var el = (tag, cls, text) => {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  };
+
+  var crumbsEl = $("crumbs"), rowsEl = $("rows"), statusEl = $("status");
+  var line = $("loadLine"), viewer = $("viewer");
+  var ENTRIES = [], imgs = [], cur = 0;
+
+  var ICONS = {
+    up:  ["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", "m17 8-5-5-5 5", "M12 3v12"],
+    dir: ["M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"]
+  };
+  ICONS.file = ["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z", "M14 2v6h6"];
+  ICONS.img  = ["M3 3h18v18H3z", "M8.5 8.5h.01", "M21 15l-5-5L5 21"];
+  ICONS.dl   = ["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", "m7 10 5 5 5-5", "M12 15V3"];
+
+  function mkIcon(paths) {
+    var NS = "http://www.w3.org/2000/svg";
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("width", "16");
+    svg.setAttribute("height", "16");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    paths.forEach(d => {
+      var p = document.createElementNS(NS, "path");
+      p.setAttribute("d", d);
+      svg.appendChild(p);
+    });
+    return svg;
+  }
+
+  function currentPath() {
+    var p;
+    try { p = decodeURIComponent(location.pathname); } catch (err) { p = location.pathname; }
+    if (p === SITE.base || p === SITE.base.slice(0, -1)) return "";
+    if (p.indexOf(SITE.base) === 0) p = p.slice(SITE.base.length);
+    else return "";
+    return p.replace(/^\/+|\/+$/g, "");
+  }
+
+  var enc = p => p.split("/").map(encodeURIComponent).join("/");
+  var fileUrl = p => SITE.base + enc(p);
+  var dirUrl = p => (p ? SITE.base + enc(p) + "/" : SITE.base);
+  var esc = s => s.replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+  function fmtSize(n) {
+    if (n == null || isNaN(n)) return "";
+    if (n < 1024) return n + " B";
+    var units = ["KB", "MB", "GB"], i = -1;
+      do { n /= 1024; i++; } while (n >= 1024 && i < units.length - 1);
+    return (n >= 10 ? Math.round(n) : Math.round(n * 10) / 10) + " " + units[i];
+  }
+
+  function go(url) {
+    line.classList.add("animate");
+    setTimeout(() => { window.location.href = url; }, 1050);
+  }
+
+  crumbsEl.addEventListener("click", e => {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    go(a.href);
+  });
+
+  function setStatus(msg, isErr) {
+    statusEl.textContent = msg || "";
+    statusEl.classList.toggle("error", !!isErr);
+  }
+
+  function drawCrumbs(path) {
+    var html = '<a href="' + SITE.base + '">' + SITE.repo + "</a>";
+    if (path) {
+      var parts = path.split("/");
+      for (var i = 0; i < parts.length; i++) {
+        html += ' <span>/</span> <a href="' + dirUrl(parts.slice(0, i + 1).join("/")) + '">' + esc(parts[i]) + "</a>";
+      }
+    }
+    crumbsEl.innerHTML = html;
+    $("folderName").textContent = path ? path.split("/").pop() : SITE.repo;
+    document.title = (path ? path + " — " : "") + SITE.repo;
+  }
+
+  function toEntries(raw) {
+    var src = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.files) ? raw.files : []);
+    var out = [];
+    src.forEach(item => {
+      var p, s;
+      if (typeof item === "string") {
+        p = item;
+      } else {
+        p = (item.p ?? item.name ?? "").replace(/^\//, "");
+          s = item.s ?? item.size;
+      }
+      if (!p || SKIP.indexOf(p.split("/")[0]) !== -1) return;
+      out.push({ p: p, s: s });
+    });
+    return out;
+  }
+
+  function buildListing(path) {
+    var prefix = path ? path + "/" : "";
+    var dirs = {}, files = [];
+    for (var i = 0; i < ENTRIES.length; i++) {
+      var e = ENTRIES[i];
+      if (e.p === path || e.p.indexOf(prefix) !== 0) continue;
+      var rest = e.p.slice(prefix.length);
+      var cut = rest.indexOf("/");
+      if (cut === -1) {
+        files.push({ type: "file", name: rest, path: e.p, size: e.s });
+      } else {
+        var d = rest.slice(0, cut);
+        if (!dirs[d]) dirs[d] = { type: "dir", name: d, path: prefix + d };
+      }
+    }
+    var items = Object.keys(dirs).map(k => dirs[k]).concat(files);
+    items.sort((a, b) => {
+      if (a.type !== b.type) return a.type === "dir" ? -1 : 1;
+      return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
+    });
+    return items;
+  }
+
+  function parentRow(path) {
+    var r = el("div", "row");
+    r.appendChild(mkIcon(ICONS.up));
+    var a = el("a", "name", "..");
+    a.href = dirUrl(path.split("/").slice(0, -1).join("/"));
+    r.appendChild(a);
+    r.appendChild(el("span", "size", "parent directory"));
+    return r;
+  }
+
+  function mkRow(it) {
+    var r = el("div", "row");
+    var isImg = it.type === "file" && IMAGE_RE.test(it.name);
+    var ic = mkIcon(it.type === "dir" ? ICONS.dir : (isImg ? ICONS.img : ICONS.file));
+    if (it.type === "dir") ic.classList.add("fld");
+    r.appendChild(ic);
+
+    var href = it.type === "dir" ? dirUrl(it.path) : fileUrl(it.path);
+    var a = el("a", "name", it.name);
+    a.href = href;
+
+    if (isImg) {
+      var idx = imgs.length;
+      imgs.push({ name: it.name, href: href });
+      a.href = "#";
+      a.addEventListener("click", e => {
+        e.preventDefault();
+        openViewer(idx);
+      });
+    } else {
+        a.addEventListener("click", e => {
+          e.preventDefault();
+          go(href);
+        });
+    }
+    r.appendChild(a);
+
+    if (it.type === "file") {
+      r.appendChild(el("span", "size", fmtSize(it.size)));
+      var dl = document.createElement("a");
+      dl.className = "dl-btn";
+      dl.href = href;
+      dl.title = "Download " + it.name;
+      dl.setAttribute("download", it.name);
+      dl.appendChild(mkIcon(ICONS.dl));
+      r.appendChild(dl);
+    } else {
+      r.appendChild(el("span", "size", ""));
+    }
+    return r;
+  }
+
+  function render(path) {
+    drawCrumbs(path);
+    rowsEl.textContent = "";
+    imgs = [];
+
+    var exact = path && ENTRIES.find(e => e.p.toLowerCase() === path.toLowerCase());
+    if (exact) {
+      setStatus("");
+      rowsEl.appendChild(mkRow({ type: "file", name: exact.p.split("/").pop(), path: exact.p, size: exact.s }));
+      return;
+    }
+
+    var items = buildListing(path);
+    if (path) rowsEl.appendChild(parentRow(path));
+    items.forEach(it => rowsEl.appendChild(mkRow(it)));
+
+    if (items.length === 0) {
+      var exists = path === "" || ENTRIES.some(e => e.p.indexOf(path + "/") === 0);
+      setStatus(exists ? "(empty folder)" : "Nothing exists at this path in the repository.", exists);
+    } else {
+      setStatus("");
+    }
+  }
+
+  function openViewer(i) {
+    cur = i;
+    showCur();
+    viewer.classList.add("on");
+  }
+
+  function showCur() {
+    var it = imgs[cur];
+    if (!it) return;
+    $("vImg").src = it.href;
+    $("vImg").alt = it.name;
+    $("vCap").textContent = `${it.name}  —  ${cur + 1} of ${imgs.length}`;
+    var dl = $("vDl");
+    dl.href = it.href;
+    dl.setAttribute("download", it.name);
+  }
+
+  function closeViewer() {
+    viewer.classList.remove("on");
+    $("vImg").removeAttribute("src");
+  }
+
+  function stepViewer(d) {
+    var n = imgs.length;
+    if (!n) return;
+    cur = (cur + d + n) % n;
+    showCur();
+  }
+
+  $("vClose").onclick = closeViewer;
+  $("vPrev").onclick = () => stepViewer(-1);
+  $("vNext").onclick = () => stepViewer(1);
+  viewer.addEventListener("click", e => {
+    if (e.target === viewer) closeViewer();
+  });
+  document.addEventListener("keydown", e => {
+    if (!viewer.classList.contains("on")) return;
+    if (e.key === "Escape") closeViewer();
+    else if (e.key === "ArrowLeft") stepViewer(-1);
+    else if (e.key === "ArrowRight") stepViewer(1);
+  });
+
+  function loadIndex(path) {
+    setStatus("Loading…");
+    fetch(SITE.manifest)
+      .then(res => {
+        if (!res.ok) throw new Error("no manifest");
+        return res.json();
+      })
+      .catch(() =>
+        fetch(SITE.fallback).then(res => {
+          if (!res.ok) throw new Error("no index");
+          return res.json();
+        })
+      )
+      .then(raw => {
+        ENTRIES = toEntries(raw);
+        render(path);
+      })
+      .catch(() => {
+        setStatus("Couldn't load the file index. Add a files.json at the repo root (see the setup notes), or check your connection.", true);
+      });
+  }
+
+  loadIndex(currentPath());
+})();
+</script>
+</body>
+</html>

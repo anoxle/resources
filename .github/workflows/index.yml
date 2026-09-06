@@ -1,0 +1,24 @@
+name: index
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: write files.json
+        run: |
+          git ls-tree -r -l HEAD \
+            | jq -R -s 'split("\n") | map(select(length > 0))
+                | map(capture("^(?<mode>\\S+) (?<type>\\S+) (?<sha>\\S+) +(?<size>\\d+)\\t(?<p>.*)$")
+                | {p: .p, s: (.size | tonumber)})' > files.json
+      - run: |
+          git config user.name "index-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add files.json
+          git diff --cached --quiet || git commit -m "update files.json [skip ci]"
+          git push
