@@ -206,4 +206,212 @@ loadIndex(path());
 })();
 </script>
 </body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>resources</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Inter:wght@500;600&display=swap');
+:root{--bg:#1f232e;--accent:#725de6;--accent-2:#9b62da;--muted:#9aa0b2}
+*{box-sizing:border-box}html{color-scheme:dark}
+body{margin:0;min-height:100dvh;font-family:'Inter',system-ui,sans-serif;color:#fff;background-color:var(--bg);background-image:radial-gradient(rgba(255,255,255,.11) 1px,transparent 1px),linear-gradient(180deg,rgba(114,93,230,.09) 0%,rgba(114,93,230,0) 42%);background-size:20px 20px,100% 100%;overflow-x:hidden}
+.loading-line{position:fixed;inset:0 0 auto 0;height:2px;z-index:1001;background:linear-gradient(90deg,var(--accent),var(--accent-2));transform-origin:left;transform:scaleX(0);opacity:0}
+.loading-line.animate{opacity:1;animation:loadLine 1.05s cubic-bezier(.22,.61,.36,1) forwards}
+@keyframes loadLine{0%{transform:scaleX(0)}75%{transform:scaleX(.88)}100%{transform:scaleX(1);opacity:0}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes revealUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.wrap{min-height:100dvh;display:grid;place-items:center;padding:40px 20px}
+.panel{width:100%;max-width:660px;padding:26px 22px 12px;border-radius:20px;background:#252a3a;border:1px solid #32394e;box-shadow:0 4px 16px rgba(0,0,0,.28);animation:fadeIn .45s ease both}
+.crumbs{margin:0 6px 6px;font-size:.78rem;color:var(--muted);overflow-wrap:anywhere;animation:revealUp .45s .02s both}
+.crumbs a{color:#c4c7d6;text-decoration:none}
+.crumbs a:hover{color:#fff}
+.head-txt{font-family:'Mochiy Pop One',sans-serif;font-size:clamp(1.45rem,4vw,1.95rem);margin:0 6px 18px;line-height:1.15;overflow-wrap:anywhere;background:linear-gradient(90deg,#7b6af0,#9b62da);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:revealUp .45s .06s both}
+.status{margin:0;padding:28px 8px;color:var(--muted);text-align:center;font-size:.88rem;animation:revealUp .45s .1s both}
+.status:empty{display:none}
+.status.error{color:#f0788c}
+.row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;border-bottom:1px solid #2c3246;animation:revealUp .35s both}
+.row:last-child{border-bottom:0}
+.row:hover{background:#2a2f42}
+.row svg{flex:none;color:var(--muted)}
+.row svg.fld{color:#8d80ee}
+.row .name{flex:1;min-width:0;overflow-wrap:anywhere;color:#c4c7d6;font-weight:500;font-size:.92rem;text-decoration:none}
+.row .name:hover{color:#fff}
+.row .size{color:var(--muted);font-size:.78rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.row:nth-child(2){animation-delay:.04s}
+.row:nth-child(3){animation-delay:.08s}
+.row:nth-child(4){animation-delay:.12s}
+.row:nth-child(5){animation-delay:.16s}
+.dl-btn{flex:none;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);background:#252a3a;border:1px solid #32394e;border-radius:9px;text-decoration:none}
+.dl-btn:hover{color:#fff;background:#313752;border-color:#454d6d}
+.mini-btn{height:30px;padding:0 14px;border-radius:10px;cursor:pointer;font:600 .8rem/1 'Inter',sans-serif;color:#c4c7d6;background:#2a2f42;border:1px solid #3a425e;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.mini-btn:hover{color:#fff;background:#313752;border-color:#454d6d}
+.mini-btn:active{transform:scale(.98)}
+.mini-btn.primary{color:#fff;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-color:transparent}
+.mini-btn.primary:hover{background:linear-gradient(90deg,#7a6dea,#a46de2);box-shadow:0 4px 12px rgba(114,93,230,.30)}
+.mini-btn:focus-visible,.dl-btn:focus-visible,.row .name:focus-visible,.crumbs a:focus-visible{outline:0;box-shadow:0 0 0 2px var(--bg),0 0 0 3px rgba(114,93,230,.6)}
+.viewer{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.92);display:none;flex-direction:column}
+.viewer.on{display:flex}
+.v-bar{display:flex;align-items:center;gap:8px;padding:12px;flex-wrap:wrap}
+.v-cap{flex:1;min-width:120px;color:#c4c7d6;font-size:.82rem;overflow-wrap:anywhere}
+.v-stage{flex:1;min-height:0;display:grid;place-items:center;overflow:hidden}
+.v-stage img{max-width:94vw;max-height:86vh;border-radius:8px;cursor:zoom-in;transform:translate(0,0) scale(1);transition:transform .18s ease;user-select:none;-webkit-user-drag:none}
+.v-stage img.zoomed{cursor:grab;transition:none}
+.v-stage img.zoomed:active{cursor:grabbing}
+@media(max-width:768px){.wrap{padding:24px 12px 40px}.panel{padding:20px 14px 6px;border-radius:16px}.row{gap:8px}}
+</style>
+</head>
+<body>
+<div class="loading-line" id="loadLine"></div>
+<div class="wrap">
+  <div class="panel">
+    <p class="crumbs" id="crumbs"></p>
+    <h1 class="head-txt" id="folderName">resources</h1>
+    <p class="status" id="status">Loading…</p>
+    <div id="rows"></div>
+  </div>
+</div>
+<div id="viewer" class="viewer" role="dialog" aria-label="Image viewer">
+  <div class="v-bar">
+    <button class="mini-btn" id="vPrev">Previous</button>
+    <button id="vNext" class="mini-btn">Next</button>
+    <span class="v-cap" id="vCap"></span>
+    <a class="mini-btn primary" id="vDl" href="#" download>
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+      Download
+    </a>
+    <button id="vClose" class="mini-btn">Close</button>
+  </div>
+  <div class="v-stage"><img id="vImg" alt=""></div>
+</div>
+<script>
+(function(){
+"use strict";
+var B="/resources/",MF=B+"files.json",FB="https://data.jsdelivr.com/v1/packages/gh/anoxle/resources@main?structure=flat";
+var SKIP=[".nojekyll",".github","404.html","files.json","CNAME"],IMG=/\.(png|jpe?g|gif|webp|svg|bmp|ico|avif)$/i;
+var E=[],imgs=[],cur=0,scale=1,px=0,py=0,drag=0;
+var $=function(i){return document.getElementById(i)};
+var crumbsEl=$("crumbs"),rowsEl=$("rows"),statusEl=$("status"),line=$("loadLine"),viewer=$("viewer"),img=$("vImg");
+
+function mk(t,c,x){var n=document.createElement(t);if(c)n.className=c;if(x!=null)n.textContent=x;return n}
+function svg(d){var s=document.createElementNS("http://www.w3.org/2000/svg","svg");
+s.setAttribute("viewBox","0 0 24 24");s.setAttribute("width","16");s.setAttribute("height","16");
+s.setAttribute("fill","none");s.setAttribute("stroke","currentColor");s.setAttribute("stroke-width","2");
+s.setAttribute("stroke-linecap","round");s.setAttribute("stroke-linejoin","round");s.setAttribute("aria-hidden","true");
+d.forEach(function(x){var p=document.createElementNS("http://www.w3.org/2000/svg","path");p.setAttribute("d",x);s.appendChild(p)});
+return s}
+var IC={up:["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","m17 8-5-5-5 5","M12 3v12"],
+dir:["M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"],
+file:["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6"],
+img:["M3 3h18v18H3z","M8.5 8.5h.01","M21 15l-5-5L5 21"],
+dl:["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","m7 10 5 5 5-5","M12 15V3"]};
+
+function path(){var p=location.pathname;try{p=decodeURIComponent(p)}catch(e){}
+if(p===B||p===B.slice(0,-1))return"";
+if(p.indexOf(B)===0)p=p.slice(B.length);else return"";
+return p.replace(/^\/+|\/+$/g,"")}
+var enc=function(p){return p.split("/").map(encodeURIComponent).join("/")};
+var fileUrl=function(p){return B+enc(p)};
+var dirUrl=function(p){return p?B+enc(p)+"/":B};
+var esc=function(s){return s.replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+function fmtSize(n){if(n==null||isNaN(n))return"";if(n<1024)return n+" B";
+var u=["KB","MB","GB"],i=-1;do{n/=1024;i++}while(n>=1024&&i<u.length-1);
+return(n>=10?Math.round(n):Math.round(n*10)/10)+" "+u[i]}
+function go(url){line.classList.add("animate");setTimeout(function(){location.href=url},1050)}
+crumbsEl.addEventListener("click",function(e){var a=e.target.closest("a");if(!a)return;e.preventDefault();go(a.href)});
+function setStatus(m,err){statusEl.textContent=m||"";statusEl.classList.toggle("error",!!err)}
+function drawCrumbs(p){var h='<a href="'+B+'">resources</a>';
+if(p){var s=p.split("/");for(var i=0;i<s.length;i++)h+=' <span>/</span> <a href="'+dirUrl(s.slice(0,i+1).join("/"))+'">'+esc(s[i])+"</a>"}
+crumbsEl.innerHTML=h;
+ $("folderName").textContent=p?p.split("/").pop():"resources";
+document.title=(p?p+" — ":"")+"resources"}
+
+function toEntries(raw){var src=Array.isArray(raw)?raw:(raw&&Array.isArray(raw.files)?raw.files:[]),out=[];
+src.forEach(function(o){var p,s;
+if(typeof o==="string")p=o;else{p=(o.p??o.name??"").replace(/^\//,"");s=o.s??o.size}
+if(!p||SKIP.indexOf(p.split("/")[0])!==-1)return;
+out.push({p:p,s:s})});
+return out}
+
+function listing(p){var pre=p?p+"/":"",dirs={},files=[];
+for(var i=0;i<E.length;i++){var e=E[i];
+if(e.p===p||e.p.indexOf(pre)!==0)continue;
+var rest=e.p.slice(pre.length),cut=rest.indexOf("/");
+if(cut===-1)files.push({type:"file",name:rest,path:e.p,size:e.s});
+else{var d=rest.slice(0,cut);if(!dirs[d])dirs[d]={type:"dir",name:d,path:pre+d}}}
+var items=Object.keys(dirs).map(function(k){return dirs[k]}).concat(files);
+items.sort(function(a,b){if(a.type!==b.type)return a.type==="dir"?-1:1;
+return a.name.localeCompare(b.name,undefined,{numeric:true,sensitivity:"base"})});
+return items}
+
+function mkRow(it){var r=mk("div","row"),isImg=it.type==="file"&&IMG.test(it.name);
+var ic=svg(it.type==="dir"?IC.dir:(isImg?IC.img:IC.file));
+if(it.type==="dir")ic.classList.add("fld");
+r.appendChild(ic);
+var href=it.type==="dir"?dirUrl(it.path):fileUrl(it.path);
+var a=mk("a","name",it.name);a.href=href;
+if(isImg){var idx=imgs.length;imgs.push({name:it.name,href:href});
+a.href="#";a.addEventListener("click",function(e){e.preventDefault();openViewer(idx)})}
+else a.addEventListener("click",function(e){e.preventDefault();go(href)});
+r.appendChild(a);
+if(it.type==="file"){r.appendChild(mk("span","size",fmtSize(it.size)));
+var dl=document.createElement("a");dl.className="dl-btn";dl.href=href;
+dl.title="Download "+it.name;dl.setAttribute("download",it.name);
+dl.appendChild(svg(IC.dl));r.appendChild(dl)}
+else r.appendChild(mk("span","size",""));
+return r}
+
+function render(p){drawCrumbs(p);rowsEl.textContent="";imgs=[];
+var exact=p&&E.find(function(e){return e.p.toLowerCase()===p.toLowerCase()});
+if(exact){setStatus("");
+rowsEl.appendChild(mkRow({type:"file",name:exact.p.split("/").pop(),path:exact.p,size:exact.s}));return}
+var items=listing(p);
+if(p){var r=mk("div","row");r.appendChild(svg(IC.up));
+var a=mk("a","name","..");a.href=dirUrl(p.split("/").slice(0,-1).join("/"));
+r.appendChild(a);r.appendChild(mk("span","size","parent directory"));rowsEl.appendChild(r)}
+items.forEach(function(it){rowsEl.appendChild(mkRow(it))});
+if(items.length===0){var exists=p===""||E.some(function(e){return e.p.indexOf(p+"/")===0});
+setStatus(exists?"(empty folder)":"Nothing exists at this path in the repository.",exists)}
+else setStatus("")}
+
+function zoomReset(){scale=1;px=py=0;apply()}
+function apply(){img.style.transform="translate("+px+"px,"+py+"px) scale("+scale+")";
+img.classList.toggle("zoomed",scale>1)}
+img.addEventListener("click",function(){if(scale===1)scale=2;else zoomReset();apply()});
+img.addEventListener("pointerdown",function(e){if(scale===1)return;
+drag=1;px0=e.clientX;py0=e.clientY;img.setPointerCapture(e.pointerId)});
+var px0=0,py0=0;
+img.addEventListener("pointermove",function(e){if(!drag)return;
+px+=e.clientX-px0;py+=e.clientY-py0;px0=e.clientX;py0=e.clientY;apply()});
+img.addEventListener("pointerup",function(){drag=0});
+img.addEventListener("pointercancel",function(){drag=0});
+
+function openViewer(i){cur=i;showCur();viewer.classList.add("on")}
+function showCur(){var it=imgs[cur];if(!it)return;
+zoomReset();img.src=it.href;img.alt=it.name;
+ $("vCap").textContent=it.name+"  —  "+(cur+1)+" of "+imgs.length;
+var dl=$("vDl");dl.href=it.href;dl.setAttribute("download",it.name)}
+function closeViewer(){viewer.classList.remove("on");img.removeAttribute("src");zoomReset()}
+function stepViewer(d){var n=imgs.length;if(!n)return;
+cur=(cur+d+n)%n;showCur()}
+ $("vClose").onclick=closeViewer;
+ $("vPrev").onclick=function(){stepViewer(-1)};
+ $("vNext").onclick=function(){stepViewer(1)};
+viewer.addEventListener("click",function(e){if(e.target===viewer)closeViewer()});
+document.addEventListener("keydown",function(e){
+if(!viewer.classList.contains("on"))return;
+if(e.key==="Escape")closeViewer();
+else if(e.key==="ArrowLeft")stepViewer(-1);
+else if(e.key==="ArrowRight")stepViewer(1)});
+
+function loadIndex(p){setStatus("Loading…");
+fetch(MF).then(function(r){if(!r.ok)throw new Error("no manifest");return r.json()})
+.catch(function(){return fetch(FB).then(function(r){if(!r.ok)throw new Error("no index");return r.json()})})
+.then(function(raw){E=toEntries(raw);render(p)})
+.catch(function(){setStatus("Couldn't load the file index. Add a files.json at the repo root (see the setup notes), or check your connection.",true)})}
+loadIndex(path());
+})();
+</script>
+</body>
 </html>
