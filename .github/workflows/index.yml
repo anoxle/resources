@@ -1,24 +1,31 @@
-name: index
+name: pages
 on:
   push:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
 jobs:
-  build-index:
+  deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: write files.json
+      - name: build
         run: |
           git ls-tree -r -l HEAD \
             | jq -R -s 'split("\n") | map(select(length > 0))
-                | map(capture("^(?<mode>\\S+) (?<type>\\S+) (?<sha>\\S+) +(?<size>\\d+)\\t(?<p>.*)$")
+                | map(capture("^(?<mode>\S+) (?<type>\S+) (?<sha>\S+) +(?<size>\d+)\t(?<p>.*)$")
                 | {p: .p, s: (.size | tonumber)})' > files.json
-      - run: |
-          git config user.name "index-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add files.json
-          git diff --cached --quiet || git commit -m "update files.json [skip ci]"
-          git push
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
