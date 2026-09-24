@@ -21,7 +21,7 @@ jobs:
         run: |
           git ls-tree -r -l HEAD \
             | jq -R -s 'split("\n") | map(select(length > 0))
-                | map(capture("^(?<mode>\S+) (?<type>\S+) (?<sha>\S+) +(?<size>\d+)\t(?<p>.*)$")
+                | map(capture("^(?<mode>\\S+) (?<type>\\S+) (?<sha>\\S+) +(?<size>\\d+)\\t(?<p>.*)$")
                 | {p: .p, s: (.size | tonumber)})' > files.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
